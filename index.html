@@ -3,17 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="Sagor Sen — AI Automation Freelancer specializing in n8n, AI agents, lead generation and business workflow automation.">
+  <meta name="description" content="Sagor Sen — AI Automation Freelancer specializing in n8n, AI agents, lead generation, cold email and business workflow automation.">
+  <meta name="theme-color" content="#070a09">
   <title>Sagor Sen — AI Automation Freelancer</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div class="noise"></div>
   <div class="grid"></div>
+  <div class="cursor-glow"></div>
 
   <header class="nav">
-    <a class="brand" href="#home"><span class="brand-mark">S</span><span>Sagor Sen</span><b>AI</b></a>
-    <button class="menu" aria-label="Open menu">☰</button>
+    <a class="brand" href="#home" aria-label="Sagor Sen home">
+      <span class="brand-mark">S</span><span>Sagor Sen</span><b>AI</b>
+    </a>
+    <button class="menu" aria-label="Open menu" aria-expanded="false">☰</button>
     <nav>
       <a href="#about">About</a>
       <a href="#services">Services</a>
@@ -34,14 +38,16 @@
           <a class="btn primary" href="#work">View My Work <span>↗</span></a>
           <a class="btn ghost" href="#contact">Let's Talk <span>→</span></a>
         </div>
-        <div class="mini-trust">
-          <div><strong>n8n</strong><small>Workflow automation</small></div>
-          <div><strong>AI Agents</strong><small>Intelligent systems</small></div>
-          <div><strong>APIs</strong><small>Connected tools</small></div>
+
+        <div class="hero-proof">
+          <div><strong>n8n</strong><span>Workflow automation</span></div>
+          <div><strong>AI Agents</strong><span>Task-focused systems</span></div>
+          <div><strong>APIs</strong><span>Connected workflows</span></div>
         </div>
       </div>
 
       <div class="hero-visual reveal">
+        <div class="hero-halo"></div>
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
         <div class="orbit"></div>
@@ -52,14 +58,16 @@
         <span class="float-tag tag-3">↗ API</span>
         <span class="float-tag tag-4">Automation</span>
 
-        <div class="photo-wrap">
-          <img src="sagor-sen.png" alt="Sagor Sen" class="portrait">
+        <div class="photo-stage">
+          <div class="portrait-depth"><img src="sagor-sen.png" alt="" aria-hidden="true"></div>
+          <img src="sagor-sen.png" alt="Sagor Sen, AI Automation Freelancer" class="portrait">
+          <div class="photo-light"></div>
           <div class="photo-fade"></div>
         </div>
 
         <div class="status-card">
           <span class="status-dot"></span>
-          <div><b>Building</b><small>AI automation systems</small></div>
+          <div><b>Available for automation projects</b><small>n8n · AI agents · integrations</small></div>
         </div>
       </div>
     </section>
@@ -68,19 +76,24 @@
       <div class="ticker-track">
         <span>n8n</span><i>✦</i><span>AI AGENTS</span><i>✦</i><span>LEAD GENERATION</span><i>✦</i>
         <span>RAG</span><i>✦</i><span>CRM AUTOMATION</span><i>✦</i><span>API INTEGRATION</span><i>✦</i>
-        <span>n8n</span><i>✦</i><span>AI AGENTS</span><i>✦</i><span>LEAD GENERATION</span>
+        <span>n8n</span><i>✦</i><span>AI AGENTS</span><i>✦</i><span>COLD EMAIL</span><i>✦</i><span>WORKFLOW DESIGN</span>
       </div>
     </section>
 
     <section id="about" class="section wrap">
       <div class="section-kicker">ABOUT ME</div>
       <div class="about-grid">
-        <div>
-          <h2>Building automation solutions that <span>drive results.</span></h2>
+        <div class="about-visual reveal">
+          <div class="about-glow"></div>
+          <div class="about-ring"></div>
+          <img src="sagor-sen.png" alt="Sagor Sen" class="about-photo">
+          <div class="about-badge"><b>RUET</b><span>Civil Engineering</span></div>
         </div>
-        <div>
-          <p class="section-text">I'm Sagor Sen, an AI Automation Freelancer and Civil Engineering student at Rajshahi University of Engineering &amp; Technology (RUET).</p>
-          <p class="section-text muted">I focus on practical automation using n8n, AI agents, APIs and business tools — turning repetitive processes into reliable workflows.</p>
+        <div class="about-copy">
+          <p class="mini-label">AI AUTOMATION × BUSINESS SYSTEMS</p>
+          <h2>Building automation solutions that <span>drive results.</span></h2>
+          <p class="section-text">I'm Sagor Sen, an AI Automation Freelancer and Civil Engineering student at <strong>Rajshahi University of Engineering &amp; Technology (RUET)</strong>.</p>
+          <p class="section-text muted">I focus on practical automation with n8n, AI agents, APIs and business tools — turning repetitive processes into reliable, measurable workflows.</p>
           <div class="stats">
             <div><b>n8n</b><small>Core automation</small></div>
             <div><b>AI</b><small>Agents &amp; RAG</small></div>
@@ -93,52 +106,83 @@
     <section id="services" class="section wrap">
       <div class="section-kicker">WHAT I BUILD</div>
       <div class="section-head">
-        <h2>Automation designed around <span>real business needs.</span></h2>
-        <p>From lead capture to customer support, I connect tools and AI into useful systems.</p>
+        <div><h2>Automation designed around <span>real business needs.</span></h2></div>
+        <p>From lead capture to customer support, I connect tools and AI into useful systems that reduce manual work.</p>
       </div>
       <div class="service-grid">
-        <article class="service"><span>01</span><h3>AI Workflow Automation</h3><p>Automate repetitive multi-step business processes with n8n.</p></article>
-        <article class="service"><span>02</span><h3>AI Agents</h3><p>Build task-focused agents that reason, retrieve data and take actions.</p></article>
-        <article class="service"><span>03</span><h3>Lead Generation</h3><p>Collect, enrich, qualify and organize leads automatically.</p></article>
-        <article class="service"><span>04</span><h3>Customer Support</h3><p>Connect knowledge bases, AI and messaging channels for faster support.</p></article>
-        <article class="service"><span>05</span><h3>Email Automation</h3><p>Generate, personalize and route outreach with smart workflows.</p></article>
-        <article class="service"><span>06</span><h3>API Integration</h3><p>Connect CRMs, spreadsheets, forms, email, Telegram and other tools.</p></article>
+        <article class="service"><div class="service-top"><span>01</span><b>↗</b></div><h3>AI Workflow Automation</h3><p>Automate repetitive multi-step business processes with n8n, triggers, logic and integrations.</p><div class="service-tags"><span>n8n</span><span>Webhooks</span></div></article>
+        <article class="service"><div class="service-top"><span>02</span><b>↗</b></div><h3>AI Agents</h3><p>Build task-focused agents that retrieve information, reason over context and take useful actions.</p><div class="service-tags"><span>Agents</span><span>RAG</span></div></article>
+        <article class="service"><div class="service-top"><span>03</span><b>↗</b></div><h3>Lead Generation</h3><p>Collect, enrich, qualify and organize business leads into a clean outreach-ready pipeline.</p><div class="service-tags"><span>Apify</span><span>CRM</span></div></article>
+        <article class="service"><div class="service-top"><span>04</span><b>↗</b></div><h3>Customer Support</h3><p>Connect knowledge bases, AI and messaging channels for faster, more consistent support workflows.</p><div class="service-tags"><span>AI</span><span>Knowledge base</span></div></article>
+        <article class="service"><div class="service-top"><span>05</span><b>↗</b></div><h3>Cold Email Automation</h3><p>Research leads, generate personalized outreach and route messages through reliable email workflows.</p><div class="service-tags"><span>Gmail</span><span>Personalization</span></div></article>
+        <article class="service"><div class="service-top"><span>06</span><b>↗</b></div><h3>API Integration</h3><p>Connect CRMs, spreadsheets, forms, email, Telegram and other tools into one automated system.</p><div class="service-tags"><span>REST API</span><span>HTTP</span></div></article>
       </div>
     </section>
 
     <section id="work" class="section wrap">
       <div class="section-kicker">SELECTED WORK</div>
       <div class="section-head">
-        <h2>Projects built to <span>solve problems.</span></h2>
-        <p>Production-minded automation concepts with clear business use cases.</p>
+        <div><h2>Projects built to <span>solve problems.</span></h2></div>
+        <p>Production-minded automation concepts with clear business use cases. Open any project for the full case-study view.</p>
       </div>
 
       <div class="project-grid">
-        <article class="project featured">
+        <article class="project featured reveal">
           <div class="project-art analyzer">
-            <div class="window"><div class="window-top"><i></i><i></i><i></i><span>website-analyzer</span></div>
+            <div class="window">
+              <div class="window-top"><i></i><i></i><i></i><span>website-analyzer</span><em>LIVE FLOW</em></div>
               <div class="scan"><div class="scan-icon">AI</div><div><b>Business Analysis</b><small>Processing website data…</small></div></div>
               <div class="bars"><span></span><span></span><span></span><span></span></div>
-              <div class="result"><b>87</b><small>Lead score</small><em>Generated</em></div>
+              <div class="result"><b>87</b><small>lead score</small><em>Generated ✓</em></div>
             </div>
+            <div class="art-caption"><span>01</span> Website → Research → AI insights</div>
           </div>
-          <div class="project-body"><span>AI ANALYSIS · N8N</span><h3>AI Business Website Analyzer</h3><p>Analyzes business websites and turns raw data into structured insights, lead scoring and useful recommendations.</p><div class="chips"><b>n8n</b><b>Gemini</b><b>Apify</b><b>Google Sheets</b></div><button class="details" data-title="AI Business Website Analyzer" data-desc="A portfolio-ready automation that collects website data, processes it with AI and returns structured business insights.">View Details ↗</button></div>
+          <div class="project-body">
+            <span>AI ANALYSIS · N8N</span>
+            <h3>AI Business Website Analyzer</h3>
+            <p>Analyzes business websites and turns raw data into structured insights, lead scoring and useful recommendations.</p>
+            <div class="chips"><b>n8n</b><b>Gemini</b><b>Apify</b><b>Google Sheets</b></div>
+            <button class="details" data-project="analyzer">View Case Study ↗</button>
+          </div>
         </article>
 
-        <article class="project">
-          <div class="project-art email-art"><div class="email-card"><small>AI COLD EMAIL</small><b>Personalized outreach</b><span>Website insight → pain point → relevant offer → email</span><div class="email-line"></div><div class="email-line short"></div></div></div>
-          <div class="project-body"><span>OUTREACH · AI</span><h3>AI Cold Email Generator</h3><p>Creates personalized outreach from company information and lead context.</p><div class="chips"><b>n8n</b><b>Gemini</b><b>Gmail</b></div><button class="details" data-title="AI Cold Email Generator" data-desc="Generates personalized cold emails from structured lead data and company context.">View Details ↗</button></div>
+        <article class="project reveal">
+          <div class="project-art email-art">
+            <div class="email-card"><small>AI COLD EMAIL</small><b>Personalized outreach</b><span>Website insight → pain point → relevant offer → email</span><div class="email-line"></div><div class="email-line short"></div><div class="email-footer"><span>AI PERSONALIZED</span><b>READY</b></div></div>
+          </div>
+          <div class="project-body">
+            <span>OUTREACH · AI</span><h3>AI Cold Email Generator</h3>
+            <p>Creates personalized outreach from company information and lead context.</p>
+            <div class="chips"><b>n8n</b><b>Gemini</b><b>Gmail</b></div>
+            <button class="details" data-project="cold-email">View Case Study ↗</button>
+          </div>
         </article>
 
-        <article class="project">
-          <div class="project-art lead-art"><div class="pipeline"><div>LEAD</div><b>→</b><div>AI</div><b>→</b><div>CRM</div><b>→</b><div>OUTREACH</div></div><div class="lead-score">92 <small>qualified score</small></div></div>
-          <div class="project-body"><span>LEAD GEN · CRM</span><h3>AI Lead Generation Pipeline</h3><p>Collects and enriches business data, scores opportunities and prepares leads for outreach.</p><div class="chips"><b>n8n</b><b>Apify</b><b>Sheets</b></div><button class="details" data-title="AI Lead Generation Pipeline" data-desc="A workflow concept for collecting, enriching and scoring leads before outreach.">View Details ↗</button></div>
+        <article class="project reveal">
+          <div class="project-art lead-art">
+            <div class="pipeline"><div>LEAD</div><b>→</b><div>AI</div><b>→</b><div>CRM</div><b>→</b><div>OUTREACH</div></div>
+            <div class="lead-score">92 <small>qualified score</small></div>
+            <div class="mini-pipeline"><span>COLLECT</span><i>•</i><span>ENRICH</span><i>•</i><span>SCORE</span><i>•</i><span>READY</span></div>
+          </div>
+          <div class="project-body">
+            <span>LEAD GEN · CRM</span><h3>AI Lead Generation Pipeline</h3>
+            <p>Collects and enriches business data, scores opportunities and prepares leads for outreach.</p>
+            <div class="chips"><b>n8n</b><b>Apify</b><b>Sheets</b></div>
+            <button class="details" data-project="leadgen">View Case Study ↗</button>
+          </div>
         </article>
+      </div>
+
+      <div class="project-note">
+        <span>NEW PROJECTS</span>
+        <p>More automation case studies can be added here without changing the overall design.</p>
+        <a href="#contact">Add a project ↗</a>
       </div>
     </section>
 
     <section id="process" class="section wrap">
       <div class="section-kicker">HOW I WORK</div>
+      <div class="process-intro"><h2>From manual process to <span>working system.</span></h2><p>A simple build process keeps every automation clear, testable and maintainable.</p></div>
       <div class="process-grid">
         <div><span>01</span><h3>Understand</h3><p>Map the existing process and identify repetitive work.</p></div>
         <div><span>02</span><h3>Design</h3><p>Plan triggers, AI logic, tools and data flow.</p></div>
@@ -147,8 +191,21 @@
       </div>
     </section>
 
+    <section class="section wrap capabilities">
+      <div class="section-kicker">WHY AUTOMATION</div>
+      <div class="cap-grid">
+        <div class="cap-main"><h2>Less manual work. <span>More useful output.</span></h2><p>Good automation is not about adding more tools. It is about connecting the right tools so information moves, decisions happen and repetitive tasks disappear.</p></div>
+        <div class="cap-list">
+          <div><span>01</span><b>Connect your tools</b><small>Bring forms, sheets, CRM, email and APIs together.</small></div>
+          <div><span>02</span><b>Add intelligence</b><small>Use AI where research, classification or personalization is needed.</small></div>
+          <div><span>03</span><b>Make it repeatable</b><small>Build workflows that can run consistently with less manual effort.</small></div>
+        </div>
+      </div>
+    </section>
+
     <section class="section wrap skills">
       <div class="section-kicker">TOOLKIT</div>
+      <div class="skill-head"><h2>The stack behind <span>my workflows.</span></h2><p>Free-first, practical tools chosen around the workflow—not the hype.</p></div>
       <div class="skill-cloud">
         <span>n8n</span><span>Google Gemini</span><span>Groq</span><span>Apify</span><span>Supabase</span><span>Google Sheets</span><span>Gmail</span><span>Telegram</span><span>REST APIs</span><span>Webhooks</span><span>RAG</span><span>AI Agents</span>
       </div>
@@ -162,8 +219,8 @@
           <p>Tell me what is repetitive, slow or manual. We can turn it into a smarter workflow.</p>
         </div>
         <div class="contact-actions">
-          <a class="btn primary" href="mailto:your-email@example.com">Email Me ↗</a>
-          <a class="btn ghost" href="#home">Back to top ↑</a>
+          <a class="btn primary" href="#home">Start a conversation ↗</a>
+          <a class="btn ghost" href="#work">See projects ↓</a>
         </div>
       </div>
     </section>
@@ -172,11 +229,27 @@
   <footer class="footer wrap">
     <div><b>Sagor Sen <span>AI</span></b><small>AI Automation Freelancer</small></div>
     <p>Rajshahi University of Engineering &amp; Technology (RUET) · Civil Engineering</p>
-    <a href="#home">↑</a>
+    <a href="#home" aria-label="Back to top">↑</a>
   </footer>
 
-  <div class="modal" id="modal">
-    <div class="modal-box"><button class="close">×</button><div class="section-kicker">PROJECT</div><h3 id="modalTitle"></h3><p id="modalDesc"></p><button class="btn primary close2">Close</button></div>
+  <div class="modal" id="modal" aria-hidden="true">
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close" aria-label="Close">×</button>
+      <div class="section-kicker">PROJECT CASE STUDY</div>
+      <div class="modal-top">
+        <div><span class="modal-index" id="modalIndex">01</span><h3 id="modalTitle"></h3></div>
+        <span class="modal-status">AUTOMATION</span>
+      </div>
+      <p id="modalDesc" class="modal-desc"></p>
+      <div class="modal-grid">
+        <div><small>WORKFLOW</small><strong id="modalWorkflow"></strong></div>
+        <div><small>OUTPUT</small><strong id="modalOutput"></strong></div>
+      </div>
+      <div class="modal-features" id="modalFeatures"></div>
+      <div class="modal-tech" id="modalTech"></div>
+      <div class="modal-actions" id="modalActions"></div>
+      <button class="btn ghost close2">Close</button>
+    </div>
   </div>
 
   <script src="script.js"></script>
