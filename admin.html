@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sagor Sen — Admin Dashboard</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Arial, sans-serif; background: #0b0d10; color: #f5f5f5; }
+    .admin { width: min(1100px, 92%); margin: 50px auto; }
+    .admin-header { margin-bottom: 35px; }
+    .admin-header h1 { margin: 0 0 8px; font-size: 32px; }
+    .admin-header p { color: #9da3ad; }
+    .panel { background: #13161b; border: 1px solid #252a32; border-radius: 18px; padding: 28px; margin-bottom: 24px; }
+    .panel h2 { margin-top: 0; margin-bottom: 22px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .field { display: flex; flex-direction: column; gap: 8px; }
+    .field.full { grid-column: 1 / -1; }
+    label { font-size: 14px; color: #b7bdc7; font-weight: 600; }
+    input, textarea, select { width: 100%; padding: 12px 14px; border: 1px solid #303640; border-radius: 10px; background: #0d1014; color: #fff; outline: none; }
+    textarea { min-height: 90px; resize: vertical; }
+    .checkbox { display: flex; align-items: center; gap: 10px; margin-top: 5px; }
+    .checkbox input { width: auto; }
+    button { border: 0; border-radius: 10px; padding: 12px 20px; background: #22c55e; color: #090c10; font-weight: 700; cursor: pointer; transition: 0.2s; }
+    button:hover { opacity: 0.88; transform: translateY(-1px); }
+    #message { margin-top: 15px; color: #22c55e; font-weight: 600; }
+    .back { display: inline-block; margin-bottom: 25px; color: #aaa; text-decoration: none; }
+    
+    /* Drag and Drop Image Grid */
+    .image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 10px; }
+    .img-card { position: relative; border: 2px solid #252a32; border-radius: 10px; overflow: hidden; background: #0d1014; padding: 6px; text-align: center; cursor: grab; }
+    .img-card:active { cursor: grabbing; }
+    .img-card.is-thumb { border-color: #22c55e; }
+    .img-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; pointer-events: none; }
+    .thumb-badge { position: absolute; top: 8px; left: 8px; background: #22c55e; color: #000; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
+    .remove-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,0,0,0.8); color: #fff; border:0; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding:0; }
+
+    .project-thumb { width: 70px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #252a32; background: #13161b; }
+
+    @media (max-width: 700px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .field.full { grid-column: auto; }
+    }
+  </style>
+</head>
+
+<body>
+<div id="login-screen" style="min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;">
+  <form id="login-form" style="width:min(420px,100%); background:#13161b; border:1px solid #252a32; border-radius:18px; padding:30px;">
+    <h1 style="margin-top:0;">Admin Login</h1>
+    <p style="color:#9da3ad;">Sign in to manage your portfolio.</p>
+    <div style="margin:20px 0;">
+      <label>Email</label>
+      <input id="login-email" type="email" required style="margin-top:8px;">
+    </div>
+    <div style="margin:20px 0;">
+      <label>Password</label>
+      <input id="login-password" type="password" required style="margin-top:8px;">
+    </div>
+    <button type="submit" style="width:100%;">Login</button>
+    <p id="login-message" style="color:#9da3ad;"></p>
+  </form>
+</div>
+
+<main class="admin" id="admin-dashboard" style="display:none;">
+  <a href="index.html" class="back">← Back to Portfolio</a>
+  <div class="admin-header">
+    <h1>Admin Dashboard</h1>
+    <p>Upload screenshots, drag to reorder images, and add multiple JSON workflows.</p>
+  </div>
+
+  <section class="panel">
+    <h2 id="form-title">Add / Edit Project</h2>
+    <form id="project-form">
+      <div class="form-grid">
+        <div class="field">
+          <label>Project Title</label>
+          <input id="title" type="text" placeholder="AI Lead Generation Pipeline" required>
+        </div>
+
+        <div class="field">
+          <label>Category</label>
+          <input id="category" type="text" placeholder="Lead Gen · CRM Automation">
+        </div>
+
+        <div class="field full">
+          <label>Short Description (Portfolio Card)</label>
+          <textarea id="short_description" placeholder="Brief summary of what this automation does"></textarea>
+        </div>
+
+        <div class="field full">
+          <label>The Problem (Client Pain Point)</label>
+          <textarea id="problem_statement" placeholder="What manual issue was the client facing?"></textarea>
+        </div>
+
+        <div class="field full">
+          <label>The Solution (How You Built It)</label>
+          <textarea id="solution_statement" placeholder="Explain your n8n workflow, AI nodes, and logic"></textarea>
+        </div>
+
+        <div class="field full">
+          <label>Key Results & ROI</label>
+          <input id="results" type="text" placeholder="e.g. Saved 15 hrs/week | 99% Lead Accuracy">
+        </div>
+
+        <div class="field full">
+          <label>Full Technical Description (Optional)</label>
+          <textarea id="full_description" placeholder="Additional technical details"></textarea>
+        </div>
+
+        <div class="field">
+          <label>Tech Stack (Comma Separated)</label>
+          <input id="tech_stack" type="text" placeholder="n8n, OpenAI, Google Sheets, Make">
+        </div>
+
+        <div class="field">
+          <label>Status</label>
+          <select id="status">
+            <option value="Completed">Completed</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Concept">Concept</option>
+          </select>
+        </div>
+
+        <!-- Drag & Drop Multiple Images Preview -->
+        <div class="field full">
+          <label>Upload Screenshots / Workflow Diagrams (Multiple)</label>
+          <input id="image_files" type="file" accept="image/*" multiple>
+          <p style="font-size:12px; color:#9da3ad; margin:4px 0 0;">💡 Drag and drop cards below to reorder pictures. The 1st image will be the Main Cover!</p>
+          <div id="image-preview-grid" class="image-preview-grid"></div>
+        </div>
+
+        <!-- Multiple JSON Files Upload -->
+        <div class="field full">
+          <label>Upload Workflow JSON Files (Select Multiple)</label>
+          <input id="workflow_files" type="file" accept=".json" multiple>
+          <div id="existing-json-files" style="margin-top:6px; font-size:12px; color:#22c55e;"></div>
+        </div>
+
+        <!-- Multiple Links -->
+        <div class="field full">
+          <label>Workflow Blueprint / Drive Links (Separate with Comma for Multiple)</label>
+          <input id="workflow_url" type="text" placeholder="https://drive.google.com/..., https://n8n.io/...">
+        </div>
+
+        <div class="field">
+          <label>Live Demo URL</label>
+          <input id="live_url" type="text" placeholder="https://...">
+        </div>
+
+        <div class="field">
+          <label>GitHub URL</label>
+          <input id="github_url" type="text" placeholder="https://...">
+        </div>
+
+        <div class="field full">
+          <label>Loom Video Demo URL</label>
+          <div class="field">
+  <label>Upload Video Demo File (MP4, WebM)</label>
+  <input id="video_file" type="file" accept="video/*">
+</div>
+          <input id="video_url" type="text" placeholder="https://loom.com/share/...">
+        </div>
+
+        <div class="field full checkbox">
+          <input id="published" type="checkbox" checked>
+          <label for="published">Publish this project on portfolio</label>
+        </div>
+      </div>
+
+      <br>
+      <div style="display:flex; gap:12px;">
+        <button type="submit" id="submit-btn">Add Project</button>
+        <button type="button" id="cancel-btn" style="background:#252a32; color:#fff; display:none;" onclick="resetForm()">Cancel Edit</button>
+      </div>
+      <div id="message"></div>
+    </form>
+
+    <hr style="border:0;border-top:1px solid #252a32;margin:30px 0;">
+
+    <h2>Existing Projects</h2>
+    <div id="admin-projects-list"></div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://imvdzjnarigcaajpugqp.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_k9QL3s2JmKmXAEBLpilGhg_0dGKR9xj";
+
+  const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  let editingProjectId = null;
+  
+  // Image State List: [{ type: 'url'|'file', value: '...' }]
+  let imageList = [];
+  let existingJsonFiles = [];
+
+  // Sortable Drag & Drop Init
+  const gridContainer = document.getElementById("image-preview-grid");
+  new Sortable(gridContainer, {
+    animation: 150,
+    onEnd: function () {
+      reorderImageListFromDOM();
+    }
+  });
+
+  // Login
+  document.getElementById("login-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+    const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if (error) { document.getElementById("login-message").textContent = "Login failed: " + error.message; return; }
+    document.getElementById("login-screen").style.display = "none";
+    document.getElementById("admin-dashboard").style.display = "block";
+    loadAdminProjects();
+  });
+
+  supabaseClient.auth.getSession().then(({ data }) => {
+    if (data.session) {
+      document.getElementById("login-screen").style.display = "none";
+      document.getElementById("admin-dashboard").style.display = "block";
+      loadAdminProjects();
+    }
+  });
+
+  // Handle New Image Selection
+  document.getElementById("image_files").addEventListener("change", (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(f => imageList.push({ type: 'file', value: f }));
+    renderPreviewGrid();
+  });
+
+  function renderPreviewGrid() {
+    gridContainer.innerHTML = "";
+
+    imageList.forEach((item, idx) => {
+      const isThumb = idx === 0;
+      const card = document.createElement("div");
+      card.className = `img-card ${isThumb ? 'is-thumb' : ''}`;
+      card.dataset.index = idx;
+
+      const imgSrc = item.type === 'url' ? item.value : URL.createObjectURL(item.value);
+
+      card.innerHTML = `
+        ${isThumb ? '<span class="thumb-badge">COVER</span>' : ''}
+        <button type="button" class="remove-btn" onclick="removeImage(${idx})">✕</button>
+        <img src="${imgSrc}">
+        <div style="font-size:10px; color:#aaa; margin-top:4px;">Pos: #${idx + 1}</div>
+      `;
+      gridContainer.appendChild(card);
+    });
+  }
+
+  function reorderImageListFromDOM() {
+    const cards = Array.from(gridContainer.children);
+    const newList = cards.map(card => imageList[parseInt(card.dataset.index)]);
+    imageList = newList;
+    renderPreviewGrid();
+  }
+
+  window.removeImage = function(idx) {
+    imageList.splice(idx, 1);
+    renderPreviewGrid();
+  };
+
+  // Submit Form
+  document.getElementById("project-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const message = document.getElementById("message");
+    message.textContent = "Uploading files & saving project...";
+
+    // 1. Process Images in Reordered Order
+    let finalImageUrls = [];
+    for (const item of imageList) {
+      if (item.type === 'url') {
+        finalImageUrls.push(item.value);
+      } else {
+        const file = item.value;
+        const fileName = `${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+        const { data, error } = await supabaseClient.storage.from("project-images").upload(fileName, file);
+        if (!error) {
+          const { data: publicUrlData } = supabaseClient.storage.from("project-images").getPublicUrl(fileName);
+          finalImageUrls.push(publicUrlData.publicUrl);
+        }
+      }
+    }
+
+    // 2. Process Workflow JSON Files
+    let finalWorkflowFiles = [...existingJsonFiles];
+    const jsonFileInput = document.getElementById("workflow_files");
+    const newJsonFiles = Array.from(jsonFileInput.files);
+
+    for (const file of newJsonFiles) {
+      const fileName = `workflows/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+      const { data, error } = await supabaseClient.storage.from("project-images").upload(fileName, file);
+      if (!error) {
+        const { data: publicUrlData } = supabaseClient.storage.from("project-images").getPublicUrl(fileName);
+        finalWorkflowFiles.push({ name: file.name, url: publicUrlData.publicUrl });
+      }
+    }
+
+    let finalVideoUrl = document.getElementById("video_url").value.trim() || null;
+const videoFileInput = document.getElementById("video_file");
+
+if (videoFileInput.files.length > 0) {
+  const file = videoFileInput.files[0];
+  const fileName = `videos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+  const { data, error } = await supabaseClient.storage.from("project-images").upload(fileName, file);
+  if (!error) {
+    const { data: publicUrlData } = supabaseClient.storage.from("project-images").getPublicUrl(fileName);
+    finalVideoUrl = publicUrlData.publicUrl;
+  }
+}
+    const projectData = {
+      title: document.getElementById("title").value.trim(),
+      category: document.getElementById("category").value.trim(),
+      short_description: document.getElementById("short_description").value.trim(),
+      problem_statement: document.getElementById("problem_statement").value.trim(),
+      solution_statement: document.getElementById("solution_statement").value.trim(),
+      results: document.getElementById("results").value.trim(),
+      full_description: document.getElementById("full_description").value.trim(),
+      tech_stack: document.getElementById("tech_stack").value.trim(),
+      status: document.getElementById("status").value,
+      image_urls: finalImageUrls,
+      thumbnail_url: finalImageUrls[0] || null,
+      workflow_files: finalWorkflowFiles,
+      workflow_url: document.getElementById("workflow_url").value.trim() || null,
+      live_url: document.getElementById("live_url").value.trim() || null,
+      github_url: document.getElementById("github_url").value.trim() || null,
+      video_url: document.getElementById("video_url").value.trim() || null,
+      published: document.getElementById("published").checked
+    };
+
+    let error;
+    if (editingProjectId) {
+      const res = await supabaseClient.from("projects").update(projectData).eq("id", editingProjectId);
+      error = res.error;
+    } else {
+      const res = await supabaseClient.from("projects").insert([projectData]);
+      error = res.error;
+    }
+
+    if (error) { message.textContent = "Error: " + error.message; return; }
+
+    message.textContent = editingProjectId ? "Project updated successfully!" : "Project added successfully!";
+    resetForm();
+    loadAdminProjects();
+  });
+
+  function resetForm() {
+    editingProjectId = null;
+    imageList = [];
+    existingJsonFiles = [];
+    document.getElementById("project-form").reset();
+    document.getElementById("image-preview-grid").innerHTML = "";
+    document.getElementById("existing-json-files").innerHTML = "";
+    document.getElementById("submit-btn").textContent = "Add Project";
+    document.getElementById("cancel-btn").style.display = "none";
+    document.getElementById("form-title").textContent = "Add / Edit Project";
+  }
+
+  async function loadAdminProjects() {
+    const list = document.getElementById("admin-projects-list");
+    list.innerHTML = "Loading projects...";
+
+    const { data, error } = await supabaseClient.from("projects").select("*").order("created_at", { ascending: false });
+    if (error) { list.innerHTML = "Could not load projects."; return; }
+
+    list.innerHTML = "";
+    data.forEach((project) => {
+      const item = document.createElement("div");
+      item.style.cssText = `display:flex; justify-content:space-between; align-items:center; gap:20px; padding:16px; margin-bottom:12px; background:#0d1014; border:1px solid #252a32; border-radius:12px;`;
+      
+      const thumb = project.thumbnail_url || (project.image_urls && project.image_urls[0]);
+      const imgTag = thumb ? `<img src="${thumb}" class="project-thumb">` : `<div class="project-thumb">No Img</div>`;
+
+      item.innerHTML = `
+        <div style="display:flex; align-items:center; gap:15px;">
+          ${imgTag}
+          <div>
+            <strong>${project.title}</strong>
+            <div style="color:#9da3ad;font-size:13px;margin-top:3px;">${project.category || "AI Automation"}</div>
+          </div>
+        </div>
+        <div style="display:flex; gap:10px;">
+          <button type="button" class="edit-project" data-id="${project.id}" style="background:#252a32;color:#fff;">Edit</button>
+          <button type="button" class="delete-project" data-id="${project.id}" style="background:#2a1515;color:#ff8f8f;">Delete</button>
+        </div>
+      `;
+      list.appendChild(item);
+    });
+  }
+
+  document.addEventListener("click", async (e) => {
+    const delBtn = e.target.closest(".delete-project");
+    if (delBtn && confirm("Delete project?")) {
+      await supabaseClient.from("projects").delete().eq("id", delBtn.dataset.id);
+      loadAdminProjects();
+      return;
+    }
+
+    const editBtn = e.target.closest(".edit-project");
+    if (editBtn) {
+      const { data: project } = await supabaseClient.from("projects").select("*").eq("id", editBtn.dataset.id).single();
+      if (!project) return;
+
+      editingProjectId = project.id;
+      
+      imageList = (project.image_urls || []).map(url => ({ type: 'url', value: url }));
+      existingJsonFiles = project.workflow_files || [];
+
+      document.getElementById("title").value = project.title || "";
+      document.getElementById("category").value = project.category || "";
+      document.getElementById("short_description").value = project.short_description || "";
+      document.getElementById("problem_statement").value = project.problem_statement || "";
+      document.getElementById("solution_statement").value = project.solution_statement || "";
+      document.getElementById("results").value = project.results || "";
+      document.getElementById("full_description").value = project.full_description || "";
+      document.getElementById("tech_stack").value = project.tech_stack || "";
+      document.getElementById("status").value = project.status || "Completed";
+      document.getElementById("workflow_url").value = project.workflow_url || "";
+      document.getElementById("live_url").value = project.live_url || "";
+      document.getElementById("github_url").value = project.github_url || "";
+      document.getElementById("video_url").value = project.video_url || "";
+      document.getElementById("published").checked = project.published;
+
+      if (existingJsonFiles.length > 0) {
+        document.getElementById("existing-json-files").innerHTML = `Saved JSONs: ${existingJsonFiles.map(f => f.name || 'Workflow').join(', ')}`;
+      }
+
+      renderPreviewGrid();
+
+      document.getElementById("submit-btn").textContent = "Update Project";
+      document.getElementById("cancel-btn").style.display = "inline-block";
+      document.getElementById("form-title").textContent = "Edit Project";
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  });
+</script>
+</body>
+</html>
