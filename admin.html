@@ -27,7 +27,6 @@
     #message { margin-top: 15px; color: #22c55e; font-weight: 600; }
     .back { display: inline-block; margin-bottom: 25px; color: #aaa; text-decoration: none; }
     
-    /* Drag and Drop Image Grid */
     .image-preview-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; margin-top: 10px; }
     .img-card { position: relative; border: 2px solid #252a32; border-radius: 10px; overflow: hidden; background: #0d1014; padding: 6px; text-align: center; cursor: grab; }
     .img-card:active { cursor: grabbing; }
@@ -35,7 +34,6 @@
     .img-card img { width: 100%; height: 80px; object-fit: cover; border-radius: 6px; pointer-events: none; }
     .thumb-badge { position: absolute; top: 8px; left: 8px; background: #22c55e; color: #000; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 4px; }
     .remove-btn { position: absolute; top: 8px; right: 8px; background: rgba(255,0,0,0.8); color: #fff; border:0; border-radius: 50%; width: 20px; height: 20px; font-size: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; padding:0; }
-
     .project-thumb { width: 70px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #252a32; background: #13161b; }
 
     @media (max-width: 700px) {
@@ -67,7 +65,7 @@
   <a href="index.html" class="back">← Back to Portfolio</a>
   <div class="admin-header">
     <h1>Admin Dashboard</h1>
-    <p>Upload screenshots, drag to reorder images, and add multiple JSON workflows.</p>
+    <p>Upload screenshots, drag to reorder images, and add JSON or Word document workflows.</p>
   </div>
 
   <section class="panel">
@@ -100,8 +98,8 @@
         </div>
 
         <div class="field full">
-          <label>Key Results & ROI</label>
-          <input id="results" type="text" placeholder="e.g. Saved 15 hrs/week | 99% Lead Accuracy">
+          <label>Key Results & ROI (Bullet points separate by comma/bullet •)</label>
+          <textarea id="results" placeholder="e.g. 95%+ Time Saved • 100% Outreach Accuracy • Zero Data Pollution"></textarea>
         </div>
 
         <div class="field full">
@@ -123,7 +121,6 @@
           </select>
         </div>
 
-        <!-- Drag & Drop Multiple Images Preview -->
         <div class="field full">
           <label>Upload Screenshots / Workflow Diagrams (Multiple)</label>
           <input id="image_files" type="file" accept="image/*" multiple>
@@ -131,14 +128,13 @@
           <div id="image-preview-grid" class="image-preview-grid"></div>
         </div>
 
-        <!-- Multiple JSON Files Upload -->
+        <!-- MS Word, JSON or Text Document Upload Support -->
         <div class="field full">
-          <label>Upload Workflow JSON Files (Select Multiple)</label>
-          <input id="workflow_files" type="file" accept=".json" multiple>
+          <label>Upload Workflow Files (JSON, Word .docx, or Text Files)</label>
+          <input id="workflow_files" type="file" accept=".json, .docx, .doc, .txt" multiple>
           <div id="existing-json-files" style="margin-top:6px; font-size:12px; color:#22c55e;"></div>
         </div>
 
-        <!-- Multiple Links -->
         <div class="field full">
           <label>Workflow Blueprint / Drive Links (Separate with Comma for Multiple)</label>
           <input id="workflow_url" type="text" placeholder="https://drive.google.com/..., https://n8n.io/...">
@@ -155,11 +151,8 @@
         </div>
 
         <div class="field full">
-          <label>Loom Video Demo URL</label>
-          <div class="field">
-  <label>Upload Video Demo File (MP4, WebM)</label>
-  <input id="video_file" type="file" accept="video/*">
-</div>
+          <label>Upload Video Demo File (MP4, WebM) or Loom URL</label>
+          <input id="video_file" type="file" accept="video/*" style="margin-bottom:8px;">
           <input id="video_url" type="text" placeholder="https://loom.com/share/...">
         </div>
 
@@ -192,11 +185,9 @@
   const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
   let editingProjectId = null;
   
-  // Image State List: [{ type: 'url'|'file', value: '...' }]
   let imageList = [];
   let existingJsonFiles = [];
 
-  // Sortable Drag & Drop Init
   const gridContainer = document.getElementById("image-preview-grid");
   new Sortable(gridContainer, {
     animation: 150,
@@ -205,7 +196,6 @@
     }
   });
 
-  // Login
   document.getElementById("login-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const email = document.getElementById("login-email").value.trim();
@@ -225,7 +215,6 @@
     }
   });
 
-  // Handle New Image Selection
   document.getElementById("image_files").addEventListener("change", (e) => {
     const files = Array.from(e.target.files);
     files.forEach(f => imageList.push({ type: 'file', value: f }));
@@ -265,13 +254,11 @@
     renderPreviewGrid();
   };
 
-  // Submit Form
   document.getElementById("project-form").addEventListener("submit", async (e) => {
     e.preventDefault();
     const message = document.getElementById("message");
     message.textContent = "Uploading files & saving project...";
 
-    // 1. Process Images in Reordered Order
     let finalImageUrls = [];
     for (const item of imageList) {
       if (item.type === 'url') {
@@ -287,7 +274,6 @@
       }
     }
 
-    // 2. Process Workflow JSON Files
     let finalWorkflowFiles = [...existingJsonFiles];
     const jsonFileInput = document.getElementById("workflow_files");
     const newJsonFiles = Array.from(jsonFileInput.files);
@@ -302,17 +288,18 @@
     }
 
     let finalVideoUrl = document.getElementById("video_url").value.trim() || null;
-const videoFileInput = document.getElementById("video_file");
+    const videoFileInput = document.getElementById("video_file");
 
-if (videoFileInput.files.length > 0) {
-  const file = videoFileInput.files[0];
-  const fileName = `videos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
-  const { data, error } = await supabaseClient.storage.from("project-images").upload(fileName, file);
-  if (!error) {
-    const { data: publicUrlData } = supabaseClient.storage.from("project-images").getPublicUrl(fileName);
-    finalVideoUrl = publicUrlData.publicUrl;
-  }
-}
+    if (videoFileInput.files.length > 0) {
+      const file = videoFileInput.files[0];
+      const fileName = `videos/${Date.now()}_${file.name.replace(/\s+/g, '_')}`;
+      const { data, error } = await supabaseClient.storage.from("project-images").upload(fileName, file);
+      if (!error) {
+        const { data: publicUrlData } = supabaseClient.storage.from("project-images").getPublicUrl(fileName);
+        finalVideoUrl = publicUrlData.publicUrl;
+      }
+    }
+
     const projectData = {
       title: document.getElementById("title").value.trim(),
       category: document.getElementById("category").value.trim(),
@@ -329,7 +316,7 @@ if (videoFileInput.files.length > 0) {
       workflow_url: document.getElementById("workflow_url").value.trim() || null,
       live_url: document.getElementById("live_url").value.trim() || null,
       github_url: document.getElementById("github_url").value.trim() || null,
-      video_url: document.getElementById("video_url").value.trim() || null,
+      video_url: finalVideoUrl,
       published: document.getElementById("published").checked
     };
 
@@ -427,7 +414,7 @@ if (videoFileInput.files.length > 0) {
       document.getElementById("published").checked = project.published;
 
       if (existingJsonFiles.length > 0) {
-        document.getElementById("existing-json-files").innerHTML = `Saved JSONs: ${existingJsonFiles.map(f => f.name || 'Workflow').join(', ')}`;
+        document.getElementById("existing-json-files").innerHTML = `Saved Files: ${existingJsonFiles.map(f => f.name || 'Workflow').join(', ')}`;
       }
 
       renderPreviewGrid();

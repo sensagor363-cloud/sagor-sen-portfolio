@@ -17,9 +17,12 @@ async function loadProfile() {
   if (document.getElementById("profile-bio")) document.getElementById("profile-bio").textContent = data.bio;
   if (document.getElementById("profile-photo") && data.photo_url) document.getElementById("profile-photo").src = data.photo_url;
 
-  const { data: social } = await supabaseClient.from("social_links").select("*").single();
+ const { data: social } = await supabaseClient.from("social_links").select("*").single();
   if (social) {
-    if (document.getElementById("email-link")) document.getElementById("email-link").href = `mailto:${social.email}`;
+    const targetEmail = social.email || 'sensagor363@gmail.com';
+    if (document.getElementById("email-link")) {
+      document.getElementById("email-link").href = `https://mail.google.com/mail/?view=cm&fs=1&to=${targetEmail}`;
+    }
     if (document.getElementById("whatsapp-link")) document.getElementById("whatsapp-link").href = social.whatsapp;
     if (document.getElementById("linkedin-link")) document.getElementById("linkedin-link").href = social.linkedin;
     if (document.getElementById("github-link")) document.getElementById("github-link").href = social.github;
@@ -61,6 +64,7 @@ async function loadProjects() {
 
     const card = document.createElement("article");
     card.className = "project";
+    card.id = `project-${project.id}`;
     card.innerHTML = `
       ${visual}
       <div class="project-body">
@@ -77,6 +81,20 @@ async function loadProjects() {
     card.querySelector(".details").projectData = project;
     container.appendChild(card);
   });
+
+  // Check URL Hash for Direct Shareable Project Link
+  checkUrlHashForProject(data);
+}
+
+function checkUrlHashForProject(projects) {
+  const hash = window.location.hash;
+  if (hash && hash.startsWith('#project-')) {
+    const projId = hash.replace('#project-', '');
+    const foundProject = projects.find(p => String(p.id) === projId);
+    if (foundProject) {
+      openProjectModal(foundProject);
+    }
+  }
 }
 
 /* MODAL CAROUSEL & MULTIPLE WORKFLOW HANDLER */
@@ -86,8 +104,10 @@ let modalImages = [];
 document.addEventListener("click", (e) => {
   const btn = e.target.closest(".details");
   if (!btn) return;
+  openProjectModal(btn.projectData);
+});
 
-  const project = btn.projectData;
+function openProjectModal(project) {
   const modal = document.getElementById("project-modal");
   if (!modal) return;
 
@@ -95,17 +115,57 @@ document.addEventListener("click", (e) => {
   document.getElementById("modal-title").textContent = project.title;
   
   let modalBody = "";
+
+  // Dynamic Bullet Points ROI Results Card (Green Box UI)
   if (project.results) {
-    modalBody += `<div class="roi-badge" style="background:#162e21; border:1px solid #22c55e; color:#22c55e; padding:10px 14px; border-radius:10px; font-weight:bold; margin-bottom:15px;">🚀 Results: ${project.results}</div>`;
+    const rawResults = project.results;
+    let bulletItems = [];
+    
+    if (rawResults.includes('•')) {
+      bulletItems = rawResults.split('•').filter(i => i.trim());
+    } else if (rawResults.includes('|')) {
+      bulletItems = rawResults.split('|').filter(i => i.trim());
+    } else {
+      bulletItems = [rawResults];
+    }
+
+    modalBody += `
+      <div class="roi-container" style="background: rgba(34, 197, 94, 0.08); border: 1px solid #22c55e; border-radius: 14px; padding: 18px 20px; margin-bottom: 22px;">
+        <div style="display: flex; align-items: center; gap: 8px; color: #22c55e; font-weight: 800; font-size: 15px; margin-bottom: 12px;">
+          🚀 <span>Results: Key Results & ROI</span>
+        </div>
+        <ul style="margin: 0; padding-left: 20px; display: grid; gap: 8px; color: #22c55e; font-weight: 600; font-size: 14px; line-height: 1.5;">
+          ${bulletItems.map(item => `<li>${item.trim()}</li>`).join('')}
+        </ul>
+      </div>
+    `;
   }
+
   if (project.problem_statement) {
-    modalBody += `<div style="margin-bottom:15px;"><strong style="color:#ff8f8f;">Problem:</strong><p style="margin-top:4px; color:#ccc;">${project.problem_statement}</p></div>`;
+    modalBody += `
+      <div style="margin-bottom: 18px; background: rgba(255, 143, 143, 0.05); border-left: 4px solid #ff8f8f; padding: 12px 16px; border-radius: 6px;">
+        <strong style="color: #ff8f8f; font-size: 15px;">Problem:</strong>
+        <p style="margin-top: 6px; color: #e2e8f0; line-height: 1.6;">${project.problem_statement}</p>
+      </div>
+    `;
   }
+
   if (project.solution_statement) {
-    modalBody += `<div style="margin-bottom:15px;"><strong style="color:#22c55e;">Solution:</strong><p style="margin-top:4px; color:#ccc;">${project.solution_statement}</p></div>`;
+    modalBody += `
+      <div style="margin-bottom: 18px; background: rgba(34, 197, 94, 0.05); border-left: 4px solid #22c55e; padding: 12px 16px; border-radius: 6px;">
+        <strong style="color: #22c55e; font-size: 15px;">Solution:</strong>
+        <p style="margin-top: 6px; color: #e2e8f0; line-height: 1.6;">${project.solution_statement}</p>
+      </div>
+    `;
   }
+
   if (project.full_description) {
-    modalBody += `<div><strong>Overview:</strong><p style="margin-top:4px; color:#aaa;">${project.full_description}</p></div>`;
+    modalBody += `
+      <div style="margin-top: 15px;">
+        <strong style="color: #fff;">Overview:</strong>
+        <p style="margin-top: 6px; color: #a3b3c2; line-height: 1.6;">${project.full_description}</p>
+      </div>
+    `;
   }
 
   document.getElementById("modal-description").innerHTML = modalBody;
@@ -120,7 +180,6 @@ document.addEventListener("click", (e) => {
     });
   }
 
-  // Render Dynamic Links & Multiple Workflow Downloads
   const modalLinks = document.getElementById("modal-links");
   modalLinks.innerHTML = "";
 
@@ -134,20 +193,31 @@ document.addEventListener("click", (e) => {
     return a;
   };
 
+  // Share Project Direct Link Button
+  const shareBtn = document.createElement("button");
+  shareBtn.className = "btn ghost";
+  shareBtn.style.cssText = "padding:8px 14px; font-size:12px; margin-right:8px; margin-bottom:8px; cursor:pointer;";
+  shareBtn.innerHTML = "🔗 Share Project Link";
+  shareBtn.onclick = () => {
+    const shareUrl = `${window.location.origin}${window.location.pathname}#project-${project.id}`;
+    navigator.clipboard.writeText(shareUrl);
+    shareBtn.innerHTML = "✅ Link Copied!";
+    setTimeout(() => { shareBtn.innerHTML = "🔗 Share Project Link"; }, 2500);
+  };
+  modalLinks.appendChild(shareBtn);
+
   if (project.live_url) modalLinks.appendChild(createBtn("Live Demo ↗", project.live_url));
   if (project.video_url) modalLinks.appendChild(createBtn("Video Walkthrough ↗", project.video_url));
   if (project.github_url) modalLinks.appendChild(createBtn("GitHub Repo ↗", project.github_url));
 
-  // Multiple JSON Files Support
   if (project.workflow_files && project.workflow_files.length > 0) {
     project.workflow_files.forEach((fileObj, idx) => {
-      const name = typeof fileObj === 'object' ? (fileObj.name || `Workflow ${idx + 1}`) : `Workflow JSON ${idx + 1}`;
+      const name = typeof fileObj === 'object' ? (fileObj.name || `Workflow File ${idx + 1}`) : `Workflow File ${idx + 1}`;
       const url = typeof fileObj === 'object' ? fileObj.url : fileObj;
       modalLinks.appendChild(createBtn(`📥 Download ${name}`, url));
     });
   }
 
-  // Multiple Link URLs Support (Comma Separated)
   if (project.workflow_url) {
     const links = project.workflow_url.split(",");
     links.forEach((link, idx) => {
@@ -162,7 +232,7 @@ document.addEventListener("click", (e) => {
   renderSlider();
 
   modal.classList.add("show");
-});
+}
 
 function renderSlider() {
   const container = document.getElementById("modal-image-slider");
@@ -208,3 +278,35 @@ window.addEventListener("DOMContentLoaded", () => {
 
 loadProfile();
 loadProjects();
+// ==========================================
+// Dynamic Fullscreen Photo Viewer (Lightbox)
+// ==========================================
+const lightbox = document.getElementById('photo-lightbox');
+const lightboxImg = document.getElementById('lightbox-img');
+const lightboxClose = document.querySelector('.lightbox-close');
+
+// পেজের যেকোনো ইমেজে ক্লিক করলে লাইটবক্স খুলবে
+document.addEventListener('click', function (e) {
+  // ক্লিক করা বস্তু যদি ইমেজ হয় এবং তা লাইটবক্সের ভেতরের ইমেজ না হয়
+  if (e.target.tagName === 'IMG' && !e.target.closest('#photo-lightbox')) {
+    if (lightbox && lightboxImg) {
+      lightbox.style.display = 'flex';
+      lightboxImg.src = e.target.src;
+    }
+  }
+});
+
+// ক্লোজ বাটন বা বাইরে ব্যাকগ্রাউন্ডে ক্লিক করলে বন্ধ হবে
+if (lightboxClose) {
+  lightboxClose.addEventListener('click', () => {
+    lightbox.style.display = 'none';
+  });
+}
+
+if (lightbox) {
+  lightbox.addEventListener('click', (e) => {
+    if (e.target !== lightboxImg) {
+      lightbox.style.display = 'none';
+    }
+  });
+}
